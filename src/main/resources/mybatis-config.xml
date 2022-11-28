@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--        上述dtd文件规定了文件引入的顺序-->
+<configuration>
+<!--    <settings>-->
+<!--&lt;!&ndash;        开启懒加载&ndash;&gt;-->
+<!--        <setting name="lazyLoadingEnabled" value="true"/>-->
+<!--        <setting name="aggressiveLazyLoading" value="false"/>-->
+<!--&lt;!&ndash;        调用任何方法都不会导致立即加载&ndash;&gt;-->
+<!--        <setting name="lazyLoadTriggerMethods" value=""/>-->
+<!--    </settings>-->
+    <typeAliases>
+        <!-- typeAlias为类型指定别名，type是全限定类名，alias是别名 -->
+<!--        <typeAlias type="com.java.mybatishello2.pojo.Employee" alias="emp"/>-->
+        <!-- 为某个包下的所有类指定别名，默认别名就是类名(不区分大小写) -->
+        <package name="com.java.pojo"/>
+    </typeAliases>
+    <!-- 加载sql映射文件-->
+<!--    <mappers>-->
+<!--&lt;!&ndash;        方式一：通过mapper的resource属性加载&ndash;&gt;-->
+<!--&lt;!&ndash;        <mapper resource="com/java/mappers/AccountMapper.xml" />&ndash;&gt;-->
+<!--&lt;!&ndash;        方式二：通过mapper的class属性加载,class指定Mapper接口的全限定名-->
+<!--      方式二和方式三要满足2个条件：1.Mapper.xml必须要和Mapper接口的名称相同，2.要在相同目录下&ndash;&gt;-->
+<!--&lt;!&ndash;        <mapper class="com.java.mybatishello2.mapper.EmployeeMapper"></mapper>&ndash;&gt;-->
+<!--        &lt;!&ndash;     方式三：通过指定接口所在的包名称，自动扫描包下的所有mapper接口并加载映射文件&ndash;&gt;-->
+<!--        <package name="com.java.mapper"/>-->
+<!--    </mappers>-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+        <!-- 设置数据库类型 ，支持Oracle,Mysql,MariaDB,SQLite等多种数据库-->
+<!--        <property name="helperDialect" value="mysql"/>-->
+    </plugins>
+</configuration>

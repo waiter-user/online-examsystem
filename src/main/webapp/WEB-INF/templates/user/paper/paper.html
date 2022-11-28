@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>在线答题</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/paper.css}">
+    <script th:src="@{/js/jquery.js}" type="text/javascript"></script>
+    <script th:src="@{/js/bootstrap.js}"></script>
+    <script th:src="@{/layer/layer.js}"></script>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">在线考试系统</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+            <li><a th:href="@{/user/paper/list}">试卷列表</a></li>
+            <li><a th:href="@{'/user/subject/errorList/'+${session.user.userid}}">查看错题</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <!--            已登录-->
+            <li th:if="${null!=session.user}">
+                <a th:text="${session.user.usertruename}"></a>
+                <a th:href="@{/userlogOut}">注销</a>
+            </li>
+            <li th:unless="${null!=session.user}">
+                <a th:href="@{/}">登录</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<main class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            <h3 class="panel-title" th:value="${pname}"></h3>
+        </div>
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#Radio">单选题(共<span
+                                th:text="${#lists.size(subjects)}"></span>题，每题2分）</a>
+                    </h4>
+                </div>
+                <form action="" method="POST" role="form">
+                    <div id="Radio" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <ol>
+                                <!--                                th:each标签中可用循环状态变量来存储循环的循环的 状态，比如当钱 的索引（从0开始），次数 （从1开始 ）-->
+                                <!--                                循环状态的两个常用属性:-->
+                                <!--                                index:代表本次索引-->
+                                <!--                                count:代表循环的次数（从1开始）-->
+                                <div class="subject" th:each="item,loopStatus:${subjects}"
+                                     th:data-i="${loopStatus.index}"
+                                     data-answer="false" th:data-sid="${item.sid}" th:data-key="${item.skey}"
+                                     data-state="0" data-skey>
+                                    <li> [[${item.scontent}]]</li>
+                                    <ol>
+                                        <li><label><input type="radio" value="A"
+                                                          th:name="${item.sid}">[[${item.sa}]]</label></li>
+                                        <li><label><input type="radio" value="B"
+                                                          th:name="${item.sid}">[[${item.sb}]]</label></li>
+                                        <li><label><input type="radio" value="C"
+                                                          th:name="${item.sid}">[[${item.sc}]]</label></li>
+                                        <li><label><input type="radio" value="D"
+                                                          th:name="${item.sid}">[[${item.sd}]]</label></li>
+                                    </ol>
+                                </div>
+                            </ol>
+                            <button class="btn btn-success" type="submit">交卷</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<aside class="processor">
+    <!--    section分割 左右或上下-->
+    <section class="time" id="time">
+        00时00分00秒
+    </section>
+    <section class="timu">
+        <!--        循环生成div，每个div的 内容就是题目-->
+        <div th:each="items,loopStatus:${subjects}" th:data-i="${ loopStatus.index}">[[$loopStatus.index + 1}]]</div>
+    </section>
+</aside>
+
+<script>
+    // 获取题目数量
+    var len = $('.subject').length;
+    //未答题的数量
+    var unanswer = len;
+
+    // 获取basePath
+    var basePath = '[[@{/}]]'
+
+    // 监听点击选项,e代表当前的事件对象
+    $('.subject ol li label').click(function (e) {
+        // 获得本题的div
+        var sub = $(this).parent().parent().parent()
+        //阻止事件传播,父元素不会提交
+        sub.preventDefault();
+        //获取本题的索引
+        var indexs = sub.data('i')//等价于sub.attr("data-i)
+        // 判断此题是否回答过
+        if (sub.data('answer') == false) {
+            // 没有回答过给processor下的指定题号添加answered样式
+            $('.timu').children().eq(indexs).addClass('answered');
+            // 未答题目－1
+            unanswer--
+            sub.data('answer', true)
+        }
+        // 判断选项是否正确
+        if ($(this).find(':input').val() == sub.data('key')) {
+            // 正确给data-state赋值1
+            sub.data('state', 1)
+        } else {
+            // 不正确给data-state赋值0
+            sub.data('state', 0)
+        }
+        //用div的data-skey存储学生的选项（学生答题卡）
+        sub.data('skey', $(this).find(':input').val())
+        // siblings() 获得匹配集合中每个元素的同胞，通过选择器进行筛选是可选的。
+        $(this).parent().addClass('checked').siblings().removeClass('checked')
+    })
+
+
+    // 交卷功能
+    // (1)判断是否有未答题目
+    function unAnswer() {
+        if (unanswer != 0) {
+            layer.open({
+                title: '警告',
+                content: "还有" + unanswer + "道题目未做！",
+                icon: 2,
+                end: function () {
+                    postAnswer();
+                }
+            });
+        } else {
+            postAnswer();
+        }
+    }
+
+    // (2)计算得分
+    function getScore() {
+        //获取答对的题目数量
+        let rightCount = 0;
+        $('.submit').each(function (i, ele) {
+            //ele是dom对象，非jQuery对象
+            if ($(ele).data('state') == 1) {
+                rightCount++;
+            }
+        })
+        layer.open({
+            title: '得分',
+            content: '您的得分是:' + rightCount * 2,
+            icon: 1,
+            end: function () {
+                //跳转到我的错题页面
+                location.href = basePath + 'user/studentPaper?cmd=stupaper';
+            }
+        })
+    }
+
+    // (3)提交答案的post请求，请求后端控制器方法
+    function postAnswer() {
+        //遍历class='submit'的div
+        let sid, studentKey, studentState;
+        //试卷中的题目名称
+        let pname = '[[${pname}]]';
+        var subjectPaperArr = [];
+        $('.subject').each(function (i, ele) {
+            sid = $(ele).data('sid');
+            studentKey = $(ele).data('skey');
+            studentState = $(ele).data('state');
+            //组装一个json对象作为数组中的元素
+            let jsonobj = {
+                "sid": sid,
+                "studentKey": studentKey,
+                "studentState": studentState,
+                "pname": pname,
+                "userid": [[${session.user.userid}]]
+            };
+            subjectPaperArr.push(jsonobj);
+        });
+        //异步post请求
+        $.post({
+            url: basePath + 'user/studentpaper/add',
+            contentType: 'application/json;charset=UTF-8',
+            //将json数组h或对象转化为java对象
+            data: JSON.stringify(subjectPaperArr),
+            dataType: "text",
+            success: function (res) {
+                if (res == 'ok') {
+                    //批量插入成功，跳转到学生结果通知页面
+                    location.href = basePath + 'user/studentPaper/list' + [[${session.user.userid}]];
+                }
+            }
+        })
+        getScore();
+    }
+
+    // (4)点击交卷
+    $('form').submit(function (ev) {
+        //取消事件的传播
+        ev.preventDefault();
+        unAnswer();
+    })
+
+    // 倒计时功能
+    //小于10的数字前面补0
+    function p(n) {
+        return n < 10 ? '0' + n : n;
+    }
+
+    //获取当前时间
+    var now = new Date();
+    //获取结束时间
+    var endDate = new Date();
+    //设置考试时间（单位分钟）
+    endDate.setMinutes(now.getMinutes() + 20)
+
+    function getTime() {
+        var startDate = new Date();
+        var countDown = (endDate.getTime() - startDate.getTime()) / 1000;
+        var h = parseInt(countDown / (60 * 60) % 24);
+        var m = parseInt(countDown / 60 % 60);
+        var s = parseInt(countDown % 60);
+        $('.time').html(p(h) + '时' + p(m) + '分' + p(s) + '秒');
+        if (countDown <= 0) {
+            document.getElementById('time').innerHTML = '考试结束';
+            layer.open({
+                title: '警告',
+                content: '考试时间到，试卷已经提交！',
+                icon: 5,
+                end: function () {
+                    unAnswer();
+                }
+            })
+        } else {
+            setTimeout('getTime()', 500);
+        }
+    }
+
+    getTime()
+</script>
+</body>
+</html>

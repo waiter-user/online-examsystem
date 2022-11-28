@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.mapper.SubjectMapper">
+  <resultMap id="BaseResultMap" type="com.java.pojo.Subject">
+    <id column="sid" jdbcType="INTEGER" property="sid" />
+    <result column="scontent" jdbcType="VARCHAR" property="scontent" />
+    <result column="sa" jdbcType="VARCHAR" property="sa" />
+    <result column="sb" jdbcType="VARCHAR" property="sb" />
+    <result column="sc" jdbcType="VARCHAR" property="sc" />
+    <result column="sd" jdbcType="VARCHAR" property="sd" />
+    <result column="skey" jdbcType="VARCHAR" property="skey" />
+    <result column="sstate" jdbcType="INTEGER" property="sstate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    sid, scontent, sa, sb, sc, sd, skey, sstate
+  </sql>
+  <select id="selectListById" resultType="com.java.vo.SubjectVO">
+    select t1.sid,t1.scontent,t1.sa,t1.sb,,t1.sc,t1.sd,t2.studentkey from subject t1 inner join studentpaper t2 on t1.sid=t2.sid where
+        studentstate=0 and t2.userid=#{id} order by t1.sid
+  </select>
+<select id="selectListByIdAndPname" resultType="com.java.vo.SubjectVO">
+  select t1.sid,t1.scontent,t1.sa,t1.sb,,t1.sc,t1.sd,t2.studentkey from subject t1 inner join studentpaper t2 on t1.sid=t2.sid where
+    studentstate=0 and t2.userid=#{id} and t2.pname=#{pname} order by t1.sid
+</select>
+  <select id="selectListForPaper" resultMap="BaseResultMap">
+    select sid,scontent from subject where sstate=1 order by sid
+  </select>
+  <select id="selectListByPname" resultMap="BaseResultMap">
+    select * from subject where sid in(select sid from paper where pname=#{pname})
+  </select>
+  <!--   查询所有试题 -->
+  <select id="selectList" resultMap="BaseResultMap">
+    select sid,scontent,sa,sb,sc,sd,skey,sstate from subject
+    <if test="null!=scontent and ''!=scontent">
+      where scontent like concat('%',#{scontent},'%')
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from subject
+    where sid = #{sid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from subject
+    where sid = #{sid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.java.pojo.Subject">
+    insert into subject (sid, scontent, sa, 
+      sb, sc, sd, skey, 
+      sstate)
+    values (#{sid,jdbcType=INTEGER}, #{scontent,jdbcType=VARCHAR}, #{sa,jdbcType=VARCHAR}, 
+      #{sb,jdbcType=VARCHAR}, #{sc,jdbcType=VARCHAR}, #{sd,jdbcType=VARCHAR}, #{skey,jdbcType=VARCHAR}, 
+      #{sstate,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.java.pojo.Subject">
+    insert into subject
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sid != null">
+        sid,
+      </if>
+      <if test="scontent != null">
+        scontent,
+      </if>
+      <if test="sa != null">
+        sa,
+      </if>
+      <if test="sb != null">
+        sb,
+      </if>
+      <if test="sc != null">
+        sc,
+      </if>
+      <if test="sd != null">
+        sd,
+      </if>
+      <if test="skey != null">
+        skey,
+      </if>
+      <if test="sstate != null">
+        sstate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sid != null">
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="scontent != null">
+        #{scontent,jdbcType=VARCHAR},
+      </if>
+      <if test="sa != null">
+        #{sa,jdbcType=VARCHAR},
+      </if>
+      <if test="sb != null">
+        #{sb,jdbcType=VARCHAR},
+      </if>
+      <if test="sc != null">
+        #{sc,jdbcType=VARCHAR},
+      </if>
+      <if test="sd != null">
+        #{sd,jdbcType=VARCHAR},
+      </if>
+      <if test="skey != null">
+        #{skey,jdbcType=VARCHAR},
+      </if>
+      <if test="sstate != null">
+        #{sstate,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.java.pojo.Subject">
+    update subject
+    <set>
+      <if test="scontent != null">
+        scontent = #{scontent,jdbcType=VARCHAR},
+      </if>
+      <if test="sa != null">
+        sa = #{sa,jdbcType=VARCHAR},
+      </if>
+      <if test="sb != null">
+        sb = #{sb,jdbcType=VARCHAR},
+      </if>
+      <if test="sc != null">
+        sc = #{sc,jdbcType=VARCHAR},
+      </if>
+      <if test="sd != null">
+        sd = #{sd,jdbcType=VARCHAR},
+      </if>
+      <if test="skey != null">
+        skey = #{skey,jdbcType=VARCHAR},
+      </if>
+      <if test="sstate != null">
+        sstate = #{sstate,jdbcType=INTEGER},
+      </if>
+    </set>
+    where sid = #{sid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.java.pojo.Subject">
+    update subject
+    set scontent = #{scontent,jdbcType=VARCHAR},
+      sa = #{sa,jdbcType=VARCHAR},
+      sb = #{sb,jdbcType=VARCHAR},
+      sc = #{sc,jdbcType=VARCHAR},
+      sd = #{sd,jdbcType=VARCHAR},
+      skey = #{skey,jdbcType=VARCHAR},
+      sstate = #{sstate,jdbcType=INTEGER}
+    where sid = #{sid,jdbcType=INTEGER}
+  </update>
+</mapper>

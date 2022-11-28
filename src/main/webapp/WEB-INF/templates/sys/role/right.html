@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>角色权限分配</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/jquery.js}" type="text/javascript"></script>
+    <script>
+        function selectparent(obj) {
+            var ma = $(obj).attr("ma");
+
+            var objs = $("[parent='" + ma + "']");
+            if ($(obj).attr("checked") == "checked") {
+                for (var i = 0; i < objs.length; i++) {
+                    $(objs[i]).attr("checked", "checked");
+                }
+            } else {
+                for (var i = 0; i < objs.length; i++) {
+                    $(objs[i]).removeAttr("checked");
+                }
+            }
+        }
+
+        function selectchild(obj) {
+            var parent = $(obj).attr("parent");
+            var objs = $("[ma='" + parent + "']");
+            if ($(obj).attr("checked") == "checked") {
+                objs.attr("checked", "checked");
+            } else {
+                var children = $("[parent='" + parent + "']");
+                var bl = false;
+                for (var i = 0; i < children.length; i++) {
+                    if ($(children[i]).attr("checked") == "checked") {
+                        bl = true;
+                        break;
+                    }
+                }
+                if (!bl) {
+                    objs.removeAttr("checked");
+                }
+            }
+        }
+
+    </script>
+</head>
+
+<body class="content1">
+<script>
+    $('#a_leader_txt', parent.document).html('角色权限分配([[${rolename}]])');
+</script>
+
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <form method="post" th:action="@{/sys/role/saveright}">
+            <div class="btn-toolbar">
+                <input type="submit" class="btn btn-primary" value="保存 ">
+                <a th:href="@{/sys/role(cmd=list)}" class="btn">取消</a>
+                <input type="hidden" name="roleid" th:value="${rid}"/>
+                <div class="btn-group">
+                </div>
+            </div>
+            <div class="well">
+                <div class="toc" th:each="${list}" th:if="${fun.funpid}==-1">
+                    <h3>
+                        <!--                            父级功能菜单展示-->
+                        <input type="checkbox" onclick="selectparent(this)" th:parent="${fun.funid}" name="ckrr" th:value="${fun.funid}" th:checked="${fun.checked}"/>
+                        [[${fun.funname}]]
+                    </h3>
+                    <ul>
+                        <li th:each="child:${list}" th:if="${child.funpid==fun.funid}">
+                            <input type="checkbox" onclick="selectchild(this)" th:parent="${fun.funid}" name="ckrr" th:value="${child.funid}" th:checked="${child.checked}/>
+                            [[${child.funname}]]
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

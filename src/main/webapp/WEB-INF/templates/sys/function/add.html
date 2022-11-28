@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>增加系统功能</title>
+    <link type="text/css" rel="stylesheet" href="@{/css/bootstrap.css}">
+    <link type="text/css" rel="stylesheet" href="@{/css/theme.css}">
+    <script src="@{/js/jquery.js}" type="text/javascript"></script>
+</head>
+
+<body class="content1">
+<script>
+    $('#a_leader_txt', parent.document).html('新建系统功能');
+</script>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <form method="post" th:action="@{/sys/fun/add}">
+            <div class="btn-toolbar">
+                <input type="submit" class="btn btn-primary" value="保存 ">
+                <a th:href="@{/sys/fun/(cmd=list)}" class="btn">取消</a>
+            </div>
+            <div class="well">
+                <div class="tab-pane active in">
+                    <!--                    隐藏域传递funpid参数-->
+                    <input type="hidden" name="funpid" value="-1"/>
+                    <label>
+                        功能名称：
+                    </label>
+                    <input type="text" name="funname" maxlength="10">
+                    <label>
+                        功能地址：
+                    </label>
+                    <input type="text" name="funurl" maxlength="100">
+                    <label>
+                        功能状态：
+                    </label>
+                    <select name="funstate">
+                        <option value="1">
+                            正常
+                        </option>
+                        <option value="0">
+                            锁定
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

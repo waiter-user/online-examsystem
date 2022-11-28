@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增试卷</title>
+    <link type="text/css"  rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link type="text/css"  rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/jquery.js}" type="text/javascript"></script>
+</head>
+
+<body class="content1">
+<script>
+    $('#a_leader_txt', parent.document).html('新增试卷');
+</script>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <form method="post" th:action="@{/sys/paper/add}">
+            <div class="btn-toolbar">
+                <input type="submit" class="btn btn-primary" value="保存 ">
+                <a th:href="@{/sys/paper(cmd=list)}" class="btn">取消</a>
+
+            </div>
+
+            <div class="well">
+                <div class="tab-pane active in">
+                    <label>
+                        试卷名称：
+                    </label>
+                    <input type="text" name="pname" maxlength="10">
+                    <label>
+                        请选择要组卷的试题：
+                    </label>
+                    <input type="checkbox" th:each="sub:${subjects}" name="sids" th:value="${sub.sid}" th:text="${sub.scontent}" maxlength="10"><br>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

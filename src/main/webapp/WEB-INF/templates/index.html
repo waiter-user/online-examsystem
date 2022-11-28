@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <base href="">
+    <base target="main"/>
+    <title>欢迎使用在线考试管理系统</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/pintuer.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/admin.css}">
+    <script th:src="@{/js/jquery.js}"></script>
+</head>
+<body style="background-color:#f2f9fd">
+<div class="header bg-main">
+    <div class="logo margin-big-left fadein-top">
+        <h1><img th:src="@{/css/images/y.jpg}" class="radius-circle rotate-hover" height="50" alt="" />后台管理中心</h1>
+    </div>
+    <div class="head-l">
+        <a href="javascript:void(0)" class="button button-little bg-blue"><span class="icon-user"></span> [[${session.user.usertruename}]]([[${session.user.roleid}]])</a> &nbsp;&nbsp;
+        <a class="button button-little bg-red" href="javascript:void(0)" onclick="toLogin()" target="_self"><span class="icon-power-off"></span> 退出登录</a>
+    </div>
+</div>
+<div class="leftnav">
+    <div class="leftnav-title"><strong><span class="icon-list"></span>菜单列表</strong></div>
+        <div th:each="fun:${funList}" th:if="${fun.funpid==-1}">
+<!--            h2标签展示一级菜单(fun的第一级)-->
+            <h2><span class="icon-briefcase" th:text="${fun.funname}"></span></h2>
+            <ul th:id="'error-menu'+${fun.funid}" class="nav nav-list collapse" style="display:block">
+                <li th:each="subFun:${funList}" th:if="${subFun.funpid==fun.funid}">
+                    <a th:href="@{'/'+${subFun.funurl}}" target="right"><span class="icon-caret-right"></span>[[${subFun.funname}]]</a>
+                </li>
+            </ul>
+        </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $(".leftnav h2").click(function(){
+            $(this).next().slideToggle(200);
+            $(this).toggleClass("on");
+        })
+        $(".leftnav ul li a").click(function(){
+            $("#a_leader_txt").text($(this).text());
+            $(".leftnav ul li a").removeClass("on");
+            $(this).addClass("on");
+        })
+    });
+    function toLogin(){
+        let basePath = '[[@{/}]]';
+        let flag=confirm("确认退出系统吗?");
+        if(flag){
+            location.href=basePath+"userlogOut";
+        }
+    }
+</script>
+<ul class="bread">
+    <li><a href="javascript:void(0);" target="right" class="icon-home"> 首页</a></li>
+    <li><a href="javascript:void(0);" target="right" id="a_leader_txt">网站信息</a></li>
+</ul>
+<div class="admin">
+    <iframe scrolling="auto" rameborder="0" src="" name="right" width="100%" height="100%"></iframe>
+</div>
+</body>
+</html>

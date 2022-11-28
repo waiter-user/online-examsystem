@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>试题功能列表</title>
+    <link type="text/css"  rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link type="text/css"  rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/jquery.js}" type="text/javascript"></script>
+</head>
+
+<body class="content1">
+<script>
+    $('#a_leader_txt', parent.document).html('试题详情');
+</script>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="well">
+            <a th:href="@{/sys/paper?cmd=list}">返回</a>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>
+                        题目ID
+                    </th>
+                    <th>
+                        题干
+                    </th>
+                    <th>
+                        A选项内容
+                    </th>
+                    <th>
+                        B选项内容
+                    </th>
+                    <th>
+                        C选项内容
+                    </th>
+                    <th>
+                        D选项内容
+                    </th>
+                    <th>
+                        标准答案选项
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="sub:${subjects}">
+                        <td>
+                            [[${sub.sid}]]
+                        </td>
+                        <td>
+                            [[${sub.scontent}]]
+                        </td>
+                        <td>
+                            [[${sub.sa}]]
+                        </td>
+                        <td>
+                            [[${sub.sb}]]
+                        </td>
+                        <td>
+                            [[${sub.sc}]]
+                        </td>
+                        <td>
+                            [[${sub.sd}]]
+                        </td>
+                        <td>
+                            [[${sub.skey}]]
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

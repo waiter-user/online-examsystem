@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+">
+    <!--    开启注解模式-->
+    <context:annotation-config/>
+<!--    配置数据库连接池-->
+<!--    加载配置文件-->
+    <context:property-placeholder location="classpath:druid.properties"></context:property-placeholder>
+<!--    数据库连接池-->
+    <!--  创建一个数据源 bean，id是druidDataSource -->
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+<!--    让spring管理sqlsessionfactory，使用spring-mybatis整合包中的-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+<!--        数据库连接池-->
+        <property name="dataSource" ref="druidDataSource"></property>
+        <!-- 加载mybatis主配置文件的路径 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+        <!--  mybatis的Sql映射文件的路径-->
+        <property name="mapperLocations">
+            <array>
+                <value>classpath:mappers/PaperMapper.xml</value>
+                <value>classpath:mappers/RolerightMapper.xml</value>
+                <value>classpath:mappers/StudentpaperMapper.xml</value>
+                <value>classpath:mappers/SubjectMapper.xml</value>
+                <value>classpath:mappers/SysfunctionMapper.xml</value>
+                <value>classpath:mappers/SysroleMapper.xml</value>
+                <value>classpath:mappers/SysuserMapper.xml</value>
+            </array>
+        </property>
+    </bean>
+    <!-- Mpper接口扫描器 ，可以扫描指定包下的Mapper接口，并为接口生成代理对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.java.mapper"></property>
+    </bean>
+    <!-- 配置事务管理器-->
+    <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+<!--        数据源-->
+        <property name="dataSource"  ref="druidDataSource"></property>
+    </bean>
+<!--    自动扫描service-->
+    <context:component-scan base-package="com.java.service"></context:component-scan>
+    <!-- 通知 -->
+    <tx:advice id="txAdvice" transaction-manager="dataSourceTransactionManager">
+        <!--   配置事务属性 -->
+<!--        <tx:attributes>-->
+<!--&lt;!&ndash;            tx:method指定要被增强的事务方法（传播行为）&ndash;&gt;-->
+<!--            <tx:method name="transfer" propagation="REQUIRED" read-only="false"/>-->
+<!--        </tx:attributes>-->
+    </tx:advice>
+    <!--    配置aop切面-->
+    <aop:config>
+<!--        expression指定切入点的表达式，指定要被增强的方法 -->
+        <aop:pointcut id="txPct" expression="execution(* com.java.service.impl.*.*(..))"></aop:pointcut>
+        <!--    aop顾问，只需要声明advice的引用-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPct"></aop:advisor>
+    </aop:config>
+
+
+</beans>
